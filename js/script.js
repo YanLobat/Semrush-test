@@ -1,31 +1,25 @@
 "use strict";
-var titles_parents = document.querySelectorAll('.latest > div');
-var titles = document.querySelectorAll('.latest h3');
-var submit = document.querySelector('.subscribe input[type=submit]');
-var input = document.querySelector('.subscribe input[type=text]');
-var share = document.querySelectorAll('a.share');
-var notify = document.querySelector('.notify > a');
-var comment = document.querySelector('.comment_form textarea');
-var more = document.querySelector('.read_more .more');
-var less = document.querySelector('.read_more .less');
-var main_submit = document.querySelector('.comment_form input[type=submit]');
-var comments = document.querySelector('div.comments');
-var close = document.querySelector('.close');
+//Make jQuery like hints
+var $ = document.querySelectorAll.bind(document);
+Element.prototype.on = Element.prototype.addEventListener;
+var comment = $('.comments-form__text')[0];
+var comments = $('.comments__list')[0];
 var success = document.querySelector('.success');
 var title_height = 0;
 var ad_timer; 
 function equalHeight(){
-	for (var i = 0; i < titles_parents.length; i++){
-		var sections = titles_parents[i].children;
-		var max = 0;
-		for (var j = 0; j < sections.length; j++){
-			title_height = sections[j].children[1].children[0].children[2].clientHeight;
-			if (title_height > max)
-				max = title_height;
-		}
-		titles_parents[i].setAttribute('data-height',max);
-		max = 0;
+	var titles_parents = $('.articles__item');
+	var max = 0;
+	for (var j = 0; j < titles_parents.length; j++){
+		title_height = titles_parents[j].children[1].children[0].children[2].clientHeight;
+		if (title_height > max)
+			max = title_height;
 	}
+	for (var i = 0; i < titles_parents.length; i++){
+		titles_parents[i].setAttribute('data-height',max);
+	}
+	max = 0;
+	var titles = $('.article__title');
 	for (var i = 0; i < titles.length; i++){
 		var data = titles[i].parentNode.parentNode.parentNode.parentNode.dataset;
 		titles[i].style.height = data.height+'px';
@@ -37,6 +31,7 @@ function validateEmail(email)
     return re.test(email);
 }
 function tooltipCheckViewport(){
+	var share = document.querySelectorAll('a.share');
 	for (var i = 0; i < share.length;  i++){
 		share[i].onmouseenter = function(){
 			var coord = this.children[0].getBoundingClientRect();
@@ -183,8 +178,8 @@ function timer(){
 		success.style.top = '-50px';
 	}, 10000);
 }
-submit.onclick = function(){
-	if (validateEmail(input.value)){
+$('.subscribe-form__submit')[0].onclick = function(){
+	if (validateEmail($('.subscribe-form__input')[0].value)){
 		document.querySelector('.subscribe_text').innerHTML = "Thank you!";
 		document.querySelector('.subscribe form').innerHTML = "You have successfully subscribed to our blog.";
 		return false;
@@ -194,11 +189,11 @@ submit.onclick = function(){
 		return false;
 	}
 };
-input.onkeyup = function(){
+$('.subscribe-form__input')[0].onkeyup = function(){
 	document.querySelector('.input').classList.remove('valid_err');
 	return true;
 };
-notify.onclick = function(){
+$('.notify__button')[0].onclick = function(){
 	this.style.display = "none";
 	document.querySelector('.notify > form').style.display = "block";
 	return false;
@@ -210,7 +205,7 @@ comment.onblur = function(){
 	if (this.value == '')
 		document.querySelector('.comment_form input[type=submit]').classList.remove('allow');
 };
-main_submit.onclick = function(e){
+$('.comments-form__submit')[0].onclick = function(e){
 	e.preventDefault();
 	if (this.className != 'allow')
 		return;
@@ -221,19 +216,19 @@ main_submit.onclick = function(e){
 	voteCount()//Regenerate after creating
 	timer();
 };
-more.onclick = function(){
+$('.single-comment__more')[0].onclick = function(){
 	this.style.display = "none";
 	document.querySelector('.read_more .hidden_text').style.display = "block";
-	less.style.display = "inline";
+	$('single-comment__less')[0].style.display = "inline";
 	return false;
 };
-less.onclick = function(){
+$('.single-comment__more')[0].onclick = function(){
 	this.style.display = "none";
 	document.querySelector('.read_more .hidden_text').style.display = "none";
-	more.style.display = "inline";
+	$('.single-comment__more')[0].style.display = "inline";
 	return false;
 };
-close.onclick = function(){
+$('.success__close')[0].onclick = function(){
 	success.style.top = "-50px";
 	clearTimeout(ad_timer);
 }
