@@ -4,24 +4,23 @@ var $ = document.querySelectorAll.bind(document);
 Element.prototype.on = Element.prototype.addEventListener;
 var comment = $('.comments-form__text')[0];
 var comments = $('.comments__list')[0];
-var success = document.querySelector('.success');
+var success = $('.success')[0];
 var title_height = 0;
 var ad_timer; 
 function equalHeight(){
 	var titles_parents = $('.articles__item');
 	var max = 0;
 	for (var j = 0; j < titles_parents.length; j++){
-		title_height = titles_parents[j].children[1].children[0].children[2].clientHeight;
+		title_height = titles_parents[j].querySelector('.article__title').clientHeight;
 		if (title_height > max)
 			max = title_height;
 	}
 	for (var i = 0; i < titles_parents.length; i++){
 		titles_parents[i].setAttribute('data-height',max);
 	}
-	max = 0;
 	var titles = $('.article__title');
 	for (var i = 0; i < titles.length; i++){
-		var data = titles[i].parentNode.parentNode.parentNode.parentNode.dataset;
+		var data = titles[i].closest('.articles__item').dataset;//this is new style variant but not super cross-browser titles[i].parentNode.parentNode.parentNode.dataset;
 		titles[i].style.height = data.height+'px';
 	}
 }
@@ -31,7 +30,7 @@ function validateEmail(email)
     return re.test(email);
 }
 function tooltipCheckViewport(){
-	var share = document.querySelectorAll('a.share');
+	var share = $('.article__share');
 	for (var i = 0; i < share.length;  i++){
 		share[i].onmouseenter = function(){
 			var coord = this.children[0].getBoundingClientRect();
@@ -50,18 +49,18 @@ function tooltipCheckViewport(){
 }
 function createComment(text){
 	var new_comment = comments.children[0].cloneNode(true);
-	new_comment.querySelector('img').setAttribute('src','images/profile_author_07.png');
-	new_comment.querySelector('.author').innerHTML = "Kelsey Jones";
-	new_comment.querySelector('.comment_time').innerHTML = "• 0 secs ago";
-	new_comment.querySelector('.comment_content').innerHTML = text.value;
-	new_comment.querySelector('.comment_rating').className = "comment_rating neutral";
-	new_comment.querySelector('.comment_rating').innerHTML = "0";
-	new_comment.querySelector('.replies').innerHTML = "";//cause we don't have any replies yet
-	new_comment.querySelector('.reply').classList.remove('active');
-	new_comment.querySelector('.reply_form textarea').value = "";
-	document.querySelector('header').classList.add('added');
-	document.querySelector('.comment_count').innerHTML = parseInt(document.querySelector('.comment_count').innerHTML)+1;
-	console.log('i');	replyCount();
+	new_comment.querySelector('.single-comment__pic').setAttribute('src','images/profile_author_07.png');
+	new_comment.querySelector('.single-comment__author').innerHTML = "Kelsey Jones";
+	new_comment.querySelector('.single-comment__time').innerHTML = "• 0 secs ago";
+	new_comment.querySelector('.single-comment__content').innerHTML = text.value;
+	new_comment.querySelector('.single-comment__rating').className = "single-comment__rating neutral";
+	new_comment.querySelector('.single-comment__rating').innerHTML = "0";
+	new_comment.querySelector('.replies-list').innerHTML = "";//cause we don't have any replies yet
+	new_comment.querySelector('.single-comment__reply').classList.remove('active');
+	new_comment.querySelector('.reply-form__text').value = "";
+	$('header')[0].classList.add('added');
+	~$('.comments__count')[0].innerHTML++; //= parseInt(document.querySelector('.comment_count').innerHTML)+1;
+	replyCount();
 	var ad_id = setInterval(function(){
 		var style = window.getComputedStyle(success);
 		var top = style.top;
@@ -76,11 +75,11 @@ function createComment(text){
 	return new_comment;
 }
 function voteCount(){
-	var vote_plus = document.querySelectorAll('.vote_plus');
-	var vote_minus = document.querySelectorAll('.vote_minus');
+	var vote_plus = $('.single-comment__vote_plus');
+	var vote_minus = $('.single-comment__vote_minus');
 	for(var i = 0; i < vote_plus.length; i++){
 		vote_plus[i].onclick = function(){
-			var rating = this.parentNode.querySelector('.comment_rating');
+			var rating = this.parentNode.querySelector('.single-comment__rating');
 			switch (rating.classList[1]){
 				case 'positive':
 					var new_rating = parseInt(rating.innerHTML.substr(1))+1;
@@ -107,7 +106,7 @@ function voteCount(){
 	}
 	for(var i = 0; i < vote_minus.length; i++){
 		vote_minus[i].onclick = function(){
-			var rating = this.parentNode.querySelector('.comment_rating');
+			var rating = this.parentNode.querySelector('.single-comment__rating');
 			switch (rating.classList[1]){
 				case 'positive':
 					var new_rating = parseInt(rating.innerHTML.substr(1))-1;
@@ -134,11 +133,10 @@ function voteCount(){
 	};
 }
 function replyCount(){
-	var reply = document.querySelectorAll('a.reply');
-	var reply_comments = document.querySelectorAll('.reply_form textarea');
-	var reply_submit = document.querySelectorAll('.reply_form input[type=submit]');
+	var reply = $('.single-comment__reply');
+	var reply_comments = $('.reply-form__text');
+	var reply_submit = $('.reply-form__submit');
 	for (var i = 0; i < reply.length; i++){
-		console.log(reply[i]);
 		reply[i].onclick = function(e){
 			this.classList.toggle('active');
 			return false;
@@ -147,11 +145,11 @@ function replyCount(){
 	for (var i = 0; i < reply_comments.length; i++){
 		reply_comments[i].onkeyup = function(e){
 			e.preventDefault();
-			this.parentNode.querySelector('input[type=submit]').classList.add('allow');
+			this.parentNode.querySelector('.reply-form__submit').classList.add('allow');
 		};
 		reply_comments[i].onblur = function(){
 			if (this.value == '')
-				this.parentNode.querySelector('input[type=submit]').classList.remove('allow');
+				this.parentNode.querySelector('.reply-form__submit').classList.remove('allow');
 		};
 	}
 	for (var i = 0; i < reply_submit.length; i++){
@@ -180,34 +178,35 @@ function timer(){
 }
 $('.subscribe-form__submit')[0].onclick = function(){
 	if (validateEmail($('.subscribe-form__input')[0].value)){
-		document.querySelector('.subscribe_text').innerHTML = "Thank you!";
-		document.querySelector('.subscribe form').innerHTML = "You have successfully subscribed to our blog.";
+		$('.subscribe__text')[0].innerHTML = "Thank you!";
+		this.parentNode.innerHTML = "You have successfully subscribed to our blog.";
 		return false;
 	}	
 	else{
-		document.querySelector('.input').classList.add('valid_err');
+		this.parentNode.classList.add('not_valid');
 		return false;
 	}
 };
 $('.subscribe-form__input')[0].onkeyup = function(){
-	document.querySelector('.input').classList.remove('valid_err');
+	this.parentNode.classList.remove('not_valid');
 	return true;
 };
 $('.notify__button')[0].onclick = function(){
 	this.style.display = "none";
-	document.querySelector('.notify > form').style.display = "block";
+	$('.notify-form')[0].style.display = "block";
 	return false;
 };
 comment.onkeyup = function(){
-	document.querySelector('.comment_form input[type=submit]').classList.add('allow');
+	$('.comments-form__submit')[0].classList.add('allow');
 };
 comment.onblur = function(){
-	if (this.value == '')
-		document.querySelector('.comment_form input[type=submit]').classList.remove('allow');
+	if (!this.value)
+		$('.comments-form__submit')[0].classList.remove('allow');
 };
 $('.comments-form__submit')[0].onclick = function(e){
 	e.preventDefault();
-	if (this.className != 'allow')
+	console.log('here');
+	if (!this.classList.contains('allow'))
 		return;
 	var new_comment = createComment(comment);
 	comment.value = "";
@@ -216,7 +215,7 @@ $('.comments-form__submit')[0].onclick = function(e){
 	voteCount()//Regenerate after creating
 	timer();
 };
-$('.single-comment__more')[0].onclick = function(){
+$('.single-comment__less')[0].onclick = function(){
 	this.style.display = "none";
 	document.querySelector('.read_more .hidden_text').style.display = "block";
 	$('single-comment__less')[0].style.display = "inline";
