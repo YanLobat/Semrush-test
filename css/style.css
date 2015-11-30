@@ -538,7 +538,7 @@ body {
   font-size: 13px; }
   .single-comment__reply.active {
     color: #2b94e1; }
-    .single-comment__reply.active + .reply_form {
+    .single-comment__reply.active + .reply-form {
       display: block; }
   .single-comment__reply:hover {
     color: #2b94e1; }

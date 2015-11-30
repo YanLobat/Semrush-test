@@ -639,7 +639,7 @@ body{
 		font-size: 13px;
 		&.active{
 			color: #2b94e1;
-			&+.reply_form{
+			&+.reply-form{
 				display: block;
 			}
 		}
