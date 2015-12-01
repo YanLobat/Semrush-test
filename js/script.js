@@ -16,6 +16,9 @@ var rootScope = {
 		this.reply = $('.single-comment__reply');
 		this.reply_comments = $('.reply-form__text');
 		this.reply_submit = $('.reply-form__submit');
+		this.notify__button = $('.notify__button')[0];
+		this.subscribe_input = $('.subscribe-form__input')[0];
+		this.subscribe_submit = $('.subscribe-form__submit')[0];
 		//Handlers
 		for (var i = 0; i < this.less.length; i++ ){
 			this.less[i].addEventListener('click',this.toggleComment,false);
@@ -56,6 +59,25 @@ var rootScope = {
 			this.success.style.top = "-50px";
 			clearTimeout(this.ad_timer);
 		}.bind( this ),false);
+		this.notify__button.addEventListener('click',function(e){
+				e.preventDefault();
+				this.style.display = "none";
+				$('.notify-form')[0].style.display = "block";
+		},false);
+		this.subscribe_submit.addEventListener('click',function(e){
+			e.preventDefault();
+			if (this.validateEmail($('.subscribe-form__input')[0].value)){
+				$('.subscribe__text')[0].innerHTML = "Thank you!";
+				e.target.parentNode.innerHTML = "You have successfully subscribed to our blog.";
+			}	
+			else{
+				e.target.parentNode.querySelector('.subscribe-form__wrap').classList.add('not_valid');
+			}
+		}.bind( this ),false);
+		this.subscribe_input.addEventListener('keyup',function(){
+			this.parentNode.classList.remove('not_valid');
+			return true;
+		},false);
 		//Calling functions
 		this.replyCount();
 		this.voteCount();
@@ -210,7 +232,8 @@ var rootScope = {
 		}
 		var titles = $('.article__title');
 		for (var i = 0; i < titles.length; i++){
-			var data = titles[i].closest('.articles__item').dataset;//this is new style variant but not super cross-browser titles[i].parentNode.parentNode.parentNode.dataset;
+			console.log(titles[i]);
+			var data = titles[i].parentNode.parentNode.parentNode.dataset;//closest('.articles__item') this is new style variant but not super cross-browser titles[i].parentNode.parentNode.parentNode.dataset;
 			titles[i].style.height = data.height+'px';
 		}
 	},
@@ -231,32 +254,12 @@ var rootScope = {
 				this.children[0].classList.remove('without_before');
 			}
 		}
+	},
+	validateEmail: function(email){
+		var re = /\S+@\S+\.\S+/;
+    	return re.test(email);
 	}
 };
 rootScope.init();
-function validateEmail(email)
-{
-    var re = /\S+@\S+\.\S+/;
-    return re.test(email);
-}
-$('.subscribe-form__submit')[0].onclick = function(){
-	if (validateEmail($('.subscribe-form__input')[0].value)){
-		$('.subscribe__text')[0].innerHTML = "Thank you!";
-		this.parentNode.innerHTML = "You have successfully subscribed to our blog.";
-		return false;
-	}	
-	else{
-		this.parentNode.classList.add('not_valid');
-		return false;
-	}
-};
-$('.subscribe-form__input')[0].onkeyup = function(){
-	this.parentNode.classList.remove('not_valid');
-	return true;
-};
-$('.notify__button')[0].onclick = function(){
-	this.style.display = "none";
-	$('.notify-form')[0].style.display = "block";
-	return false;
-};
+
 
